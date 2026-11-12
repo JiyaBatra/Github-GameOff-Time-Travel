@@ -2,7 +2,7 @@
 
 # Time Traveler: Space to Today
 
-**A browser game that takes you on a journey through five ages of history. Complete tasks, solve puzzles, earn points, and dress for every era.**
+**A time-travel arcade game about recovering the cores that hold history together.**
 
 ![HTML5](https://img.shields.io/badge/HTML5-Canvas-e34f26?logo=html5&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-f7df1e?logo=javascript&logoColor=black)
@@ -22,6 +22,8 @@ There are no frameworks, no build step and no server. It runs entirely in the br
 ## Features
 
 - **5 unique ages**, each with its own background art, collectibles and hazards
+- **SHIFT in Deep Space**: reverse gravity, draw nearby cores into your field, and send debris back
+- **Combo scoring**: chain core pickups before the timer runs out to increase your score
 - **Task + puzzle gameplay**: catch items to hit your goal, then solve a puzzle for bonus points
 - **Wardrobe system**: 15 outfits (3 per age), each with a gameplay perk
 - **Points economy**: earn points in every level and spend them on outfits
@@ -34,16 +36,17 @@ There are no frameworks, no build step and no server. It runs entirely in the br
 
 1. Press **Play** and open the **Wardrobe**.
 2. Pick (or buy) an outfit for the current age, then press **Start**.
-3. **Drag your finger or mouse** to move the character.
-4. Collect the glowing **yellow-ringed** items and avoid the **red-ringed** hazards. You have 3 lives (4 with a *Life* outfit).
-5. Reach the item goal to unlock the **puzzle**. Solving it gives **+30 bonus points**.
+3. **Drag your finger or mouse** to steer. In Deep Space, press the on-screen **SHIFT** button, **Shift**, or **X** (gamepad **A**) to reverse gravity and pull nearby cores toward you.
+4. Collect the time-cores and avoid debris. You have 3 lives (4 with a *Life* outfit).
+5. Reach the item goal to unlock the core puzzle. Memory sequences get longer and faster in later ages. Matching puzzles give a brief layout preview, then add pairs, a countdown, and a limited number of mistakes. A failed attempt can be retried without losing the run score.
 6. Spend your points on outfits for the next age and keep travelling forward in time.
 
 ### Scoring
 
 | Action | Points |
 | --- | --- |
-| Each collected item | 10 |
+| First pickup in a chain | 10 |
+| Consecutive pickups | +10 per combo step, up to x5 |
 | Puzzle completed | +30 |
 | Outfit with *Bonus* perk | x1.5 on the level total |
 
@@ -51,11 +54,15 @@ There are no frameworks, no build step and no server. It runs entirely in the br
 
 | # | Age | Goal | Collect | Avoid | Puzzle |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Deep Space | 8 items | Stars, oxygen cells | Asteroids | Memory sequence |
-| 2 | Young Earth: Lava Age | 10 items | Water drops, crystals | Fire, rocks | Match the pairs |
-| 3 | Age of Dinosaurs | 12 items | Eggs, meat | Dinosaurs | Memory sequence |
-| 4 | Tribal Age | 14 items | Fruit, wood | Snakes, boars | Match the pairs |
-| 5 | Future Colony | 16 items | Energy orbs, bolts | Robots, UFOs | Memory sequence |
+| 1 | Deep Space | 8 items | Stars, oxygen cells | Asteroids | 5-signal memory sequence |
+| 2 | Young Earth: Lava Age | 10 items | Water drops, crystals | Fire, rocks | 6 pairs · 50 seconds · 3 misses |
+| 3 | Age of Dinosaurs | 12 items | Eggs, meat | Dinosaurs | 7-signal memory sequence |
+| 4 | Tribal Age | 14 items | Fruit, wood | Snakes, boars | 8 pairs · 42 seconds · 2 misses |
+| 5 | Future Colony | 16 items | Energy orbs, bolts | Robots, UFOs | 9-signal memory sequence |
+
+### Game Off 2026: SHIFT
+
+The Continuity Engine is breaking apart across time. In Deep Space, shifting gravity reverses the flow of stars, oxygen cells, and asteroids. The field also pulls nearby cores toward the player, making SHIFT a choice about when to take a risk for a pickup. The other ages retain their original catch-and-dodge loop while their distinct SHIFT mechanics are developed.
 
 ## Wardrobe
 

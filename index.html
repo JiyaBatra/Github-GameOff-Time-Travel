@@ -3,46 +3,63 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Time Traveler – Space to Today</title>
 <style>
-:root{--bg:#0b0d1a;--fg:#fff;--card:#1b1f3a;--acc:#ffd23f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#080b14;--fg:#f4f6fb;--card:#141b29;--acc:#91e7df;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b0d1a;--fg:#fff}}
-*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:system-ui,sans-serif;overflow:hidden;touch-action:none}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;touch-action:none}
 #w{height:100%;display:flex;align-items:center;justify-content:center}
 #box{position:relative;height:100%;aspect-ratio:360/560;max-width:100%}
 canvas#c{width:100%;height:100%;display:block;border-radius:12px}
-#ui{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px;background:rgba(5,6,18,.5);backdrop-filter:blur(3px);border-radius:12px;overflow:auto}
-h1{margin:0 0 6px;font-size:24px;color:var(--acc)}p{margin:4px 0;font-size:14px;line-height:1.35}
-button{background:var(--acc);color:#111;border:0;border-radius:12px;padding:10px 18px;font-size:15px;font-weight:700;margin:5px 3px}
-button.s{background:#3a4075;color:#fff}button:disabled{opacity:.35}
-.row{display:flex;gap:8px;width:100%}.oc{flex:1;background:var(--card);border-radius:12px;padding:8px 4px;border:2px solid transparent}.oc.on{border-color:var(--acc)}.oc b{font-size:12px;display:block}.oc small{font-size:11px;opacity:.8;display:block;min-height:26px}.oc button{padding:6px 8px;font-size:12px;margin:4px 0 0}
-.big{font-size:50px}.grid{display:grid;gap:8px;margin:10px 0}.pad{width:84px;height:84px;border-radius:16px;opacity:.45;border:0;padding:0}.pad.lit{opacity:1;box-shadow:0 0 22px #fff}
-.card{width:64px;height:76px;border-radius:12px;background:#3a4075;font-size:32px;padding:0;color:#fff}
-</style></head><body><div id="w"><div id="box"><canvas id="c" width="360" height="560"></canvas><div id="ui"></div></div></div>
+#ui{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 20px;background:linear-gradient(180deg,rgba(8,12,22,.86),rgba(8,12,22,.94));border:1px solid rgba(194,222,238,.1);border-radius:12px;overflow:auto;touch-action:pan-y}
+.eyebrow{margin:0 0 9px;color:#91e7df;font-size:10px;font-weight:750;letter-spacing:.2em;text-transform:uppercase}
+h1{margin:0 0 10px;font-size:clamp(23px,7vw,31px);line-height:1.08;letter-spacing:-.035em;color:#f4f6fb}p{margin:6px 0;color:#bdc8d6;font-size:14px;line-height:1.5;max-width:31ch}p b{color:#f4f6fb}
+button{background:#a5ece2;color:#0b171b;border:0;border-radius:9px;padding:12px 20px;font-size:14px;font-weight:750;margin:7px 3px;letter-spacing:.01em}
+button:hover{filter:brightness(1.08)}button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+button.s{background:#253245;color:#eaf1f7}button:disabled{opacity:.35}
+.row{display:flex;gap:8px;width:100%;max-width:420px}.oc{flex:1;min-width:0;background:rgba(20,29,44,.94);border-radius:10px;padding:8px 4px;border:1px solid rgba(188,216,231,.12)}.oc.on{border-color:var(--acc)}.oc b{font-size:11px;display:block}.oc small{font-size:10px;color:#aab8c8;display:block;min-height:26px}.oc button{padding:7px 6px;font-size:11px;margin:4px 0 0}
+.big{font-size:40px}.grid{display:grid;gap:8px;margin:10px 0}.pad{width:84px;height:84px;border-radius:12px;opacity:.5;border:0;padding:0}.pad.lit{opacity:1;transform:scale(1.05);box-shadow:0 0 22px #fff}.pad:disabled{opacity:.6}
+.card{width:100%;height:clamp(42px,11vh,68px);border-radius:10px;background:#253245;font-size:23px;padding:0;color:#fff;margin:0}.card.face{background:#a5ece2;color:#0b171b}.card.matched{background:#345750;color:#c9fff0}
+.puzzle-grid{grid-template-columns:repeat(4,minmax(36px,64px));width:min(100%,280px);justify-content:center}.puzzle-meta{font-size:12px;font-variant-numeric:tabular-nums;letter-spacing:.04em;color:#a5ece2}.puzzle-note{min-height:22px}
+#shift{position:absolute;z-index:2;right:14px;bottom:14px;min-width:116px;min-height:64px;margin:0;padding:9px 14px;border:1px solid rgba(206,248,255,.7);border-radius:12px;background:rgba(13,31,44,.94);color:#ecffff;box-shadow:0 0 26px rgba(93,220,235,.22);font-size:12px;touch-action:manipulation;display:none}
+#shift small{display:block;margin:3px 0;color:#b9d1db;font-size:10px;font-weight:500}
+#shift.reverse{border-color:#ffb987;box-shadow:0 0 26px rgba(255,147,99,.25)}
+.charge{display:block;height:3px;width:100%;margin-top:5px;overflow:hidden;border-radius:3px;background:rgba(255,255,255,.18)}
+.charge i{display:block;width:100%;height:100%;background:#a5ece2;transform:scaleX(1);transform-origin:left center}
+.hud{position:absolute;z-index:1;inset:8px 10px auto;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+.hud[hidden]{display:none}
+.hud-block{padding:7px 10px;border:1px solid rgba(221,238,250,.12);border-radius:8px;background:rgba(7,12,22,.72);color:#eef5fb;font-size:11px;font-weight:650;letter-spacing:.04em}
+.hud-block strong{color:#a5ece2}.hud-right{text-align:right}.hud-meta{display:block;margin-top:3px;color:#aab8c8;font-size:10px;font-weight:500}
+@media (max-height:560px){#box{height:100%;width:auto}#shift{bottom:8px;right:8px;min-height:52px}}
+@media (max-height:500px){#ui{padding:10px 12px}.puzzle-grid{gap:5px}.card{height:40px}.pad{width:70px;height:70px}}
+</style></head><body><div id="w"><div id="box"><canvas id="c" width="360" height="560"></canvas><div id="ui"></div><div class="hud" id="hud" hidden><div class="hud-block"><strong>TIME-CORE</strong><span class="hud-meta" id="goalText"></span></div><div class="hud-block hud-right"><span id="scoreText">SCORE 000</span><span class="hud-meta" id="livesText"></span></div></div><button id="shift" type="button" aria-label="Shift gravity"><span>SHIFT</span><small id="shiftHint">Gravity Down</small><span class="charge"><i id="shiftCharge"></i></span></button></div></div>
 <script>
-const cv=document.getElementById('c'),g=cv.getContext('2d'),ui=document.getElementById('ui'),W=360,H=560;
+const cv=document.getElementById('c'),g=cv.getContext('2d'),ui=document.getElementById('ui'),shiftButton=document.getElementById('shift'),shiftHint=document.getElementById('shiftHint'),shiftCharge=document.getElementById('shiftCharge'),hud=document.getElementById('hud'),goalText=document.getElementById('goalText'),scoreText=document.getElementById('scoreText'),livesText=document.getElementById('livesText'),W=360,H=560,dpr=Math.min(window.devicePixelRatio||1,2);
+cv.width=W*dpr;cv.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);
 const BG=["assets/backgrounds/bg1_space.jpg", "assets/backgrounds/bg2_lava.jpg", "assets/backgrounds/bg3_dinosaur.jpg", "assets/backgrounds/bg4_tribal.jpg", "assets/backgrounds/bg5_future.jpg"];const STAR=new Image();STAR.src='assets/backgrounds/bg_starfield.jpg';const IM=BG.map(s=>{const i=new Image();i.src=s;return i});
 function bg(i){const m=IM[i];if(!m||!m.naturalWidth)return;const w=W*1.2,hh=w*m.naturalHeight/m.naturalWidth,ox=-(w-W)/2+Math.sin(T*.005)*(w-W)/2;g.drawImage(m,ox,(H-hh)/2,w,hh);if(i==0&&STAR.naturalWidth){const sw=H*STAR.naturalWidth/STAR.naturalHeight,sx=-((T*.35)%sw);g.save();g.globalCompositeOperation='lighter';g.globalAlpha=.9;g.drawImage(STAR,sx,0,sw,H);g.drawImage(STAR,sx+sw,0,sw,H);g.restore()}g.fillStyle=i==1?'rgba(255,60,0,.2)':i==0?'rgba(0,0,0,.05)':'rgba(0,0,0,.22)';g.fillRect(0,0,W,H);const v=g.createLinearGradient(0,H-160,0,H);v.addColorStop(0,'transparent');v.addColorStop(1,'rgba(0,0,0,.5)');g.fillStyle=v;g.fillRect(0,H-160,W,160)}
 function lavaFloor(){const a=T*.05;g.fillStyle='#ff4a0a';g.beginPath();g.moveTo(0,530);for(let x=0;x<=W;x+=20)g.lineTo(x,522+Math.sin(x*.05+a)*5);g.lineTo(W,H);g.lineTo(0,H);g.fill()}
 const O=(n,col,hat,cost,perk,helm)=>({n,col,hat,cost,perk,helm});
 const PK={life:'+1 life',magnet:'Bigger pickup range',bonus:'x1.5 points'};
 const L=[
-{n:'Deep Space',sky:['#02030f','#241466'],goal:8,task:'Collect 8 oxygen cells & stars. Dodge asteroids!',good:['⭐','🔋'],bad:['☄️'],puz:'simon',ic:['🚀','🛰️','🌟','🪐'],
+{n:'Deep Space',sky:['#02030f','#241466'],goal:8,task:'Recover 8 time-cores. Avoid the debris.',story:'The Continuity Engine has split the timeline. Its first core is drifting through the wreckage.',good:['star','cell'],bad:['debris'],puz:'simon',
  o:[O('Space Suit (FREE)','#e8eef7','',0,'',1),O('Neon Suit','#7b5cff','',40,'life',1),O('Gold Suit','#ffc83d','',80,'bonus',1)]},
-{n:'Young Earth: Lava Age',sky:['#2b0a05','#e0561a'],goal:10,task:'Collect water & crystals. Avoid fire & rocks!',good:['💧','💎'],bad:['🔥','🪨'],puz:'match',ic:['🌋','💎','💧','🔥'],
+{n:'Young Earth: Lava Age',sky:['#2b0a05','#e0561a'],goal:10,task:'Collect water and crystals. Avoid fire and falling rock.',good:['💧','💎'],bad:['🔥','🪨'],puz:'match',
  o:[O('Heat Suit','#ff6a3d','⛑️',40,'life'),O('Rock Armor','#6b6b78','🪖',60,'magnet'),O('Obsidian Cloak','#2a2233','🎩',90,'bonus')]},
-{n:'Age of Dinosaurs',sky:['#7cc7ee','#d9f2c0'],goal:12,task:'Collect eggs & meat. Run from the dinos!',good:['🥚','🍖'],bad:['🦖','🦕'],puz:'simon',ic:['🥚','🦴','🦖','🌴'],
+{n:'Age of Dinosaurs',sky:['#7cc7ee','#d9f2c0'],goal:12,task:'Gather food. Keep clear of the herd.',good:['🥚','🍖'],bad:['🦖','🦕'],puz:'simon',
  o:[O('Explorer','#8a6b3a','🤠',50,'life'),O('Camo Gear','#3f7d3a','🪖',70,'magnet'),O('Ranger','#2f6fbf','👒',100,'bonus')]},
-{n:'Tribal Age (Jiga Lala Huhu!)',sky:['#5b2a63','#f6a04d'],goal:14,task:'Gather fruit & wood. Beware snakes & boars!',good:['🍎','🪵'],bad:['🐍','🐗'],puz:'match',ic:['🔥','🍎','🪵','🦴'],
+{n:'Tribal Age',sky:['#5b2a63','#f6a04d'],goal:14,task:'Gather fruit and wood. Watch for wildlife.',good:['🍎','🪵'],bad:['🐍','🐗'],puz:'match',
  o:[O('Leaf Wrap','#4f9a3c','🌿',50,'life'),O('Fur Cloak','#a0693a','🦴',70,'magnet'),O('Chief Feathers','#c0392b','🪶',100,'bonus')]},
-{n:'Future Colony',sky:['#2a0f4a','#c04ad0'],goal:16,task:'Collect energy orbs & crystals. Dodge robots & UFOs!',good:['🔮','⚡'],bad:['🤖','🛸'],puz:'simon',ic:['🔮','🛰️','🤖','💡'],
+{n:'Future Colony',sky:['#2a0f4a','#c04ad0'],goal:16,task:'Restore the power grid. Avoid security drones.',good:['🔮','⚡'],bad:['🤖','🛸'],puz:'simon',
  o:[O('Cyber Wear','#06b6d4','🥽',60,'life'),O('Android Armor','#64748b','🤖',90,'magnet'),O('Star Commander','#e11d48','👑',120,'bonus')]}];
 const CH={"space": "assets/characters/1_space_suit.webp", "neon": "assets/characters/1_neon_suit.webp", "gold": "assets/characters/1_gold_suit.webp", "leaf": "assets/characters/4_leaf_wrap.webp", "fur": "assets/characters/4_fur_cloak.webp", "feather": "assets/characters/4_chief_feathers.webp", "cyber": "assets/characters/5_cyber_wear.webp", "android": "assets/characters/5_android_armor.webp", "rock": "assets/characters/2_rock_armor.webp", "obsid": "assets/characters/2_obsidian_cloak.webp", "cmdr": "assets/characters/5_star_commander.webp", "explorer": "assets/characters/3_explorer.webp", "camo": "assets/characters/3_camo_gear.webp", "ranger": "assets/characters/3_ranger.webp"};const CI=[["space", "neon", "gold"], [null, "rock", "obsid"], ["explorer", "camo", "ranger"], ["leaf", "fur", "feather"], ["cyber", "android", "cmdr"]].map(r=>r.map(k=>{if(!k)return null;const i=new Image();i.src=CH[k];return i}));
 CI[1][0]=(()=>{const i=new Image();i.src='assets/characters/2_heat_suit.webp';return i})();L.forEach((l,i)=>l.o.forEach((o,j)=>o.im=CI[i][j]));
 let S={w:0,own:['0-0'],lvl:0,sel:{0:0}};
 try{const s=JSON.parse(localStorage.getItem('ty')||'null');if(s)S=s}catch(e){}
 const save=()=>{try{localStorage.setItem('ty',JSON.stringify(S))}catch(e){}};
-let mode='menu',P,items,got,lives,t=0,tx,ty,parts=[],T=0;
+let mode='menu',P,items,got,lives,t=0,tx,ty,parts=[],T=0,reverseGravity=false,shiftAvailableAt=0,shiftPulse=0,shiftField=0,gamepadShiftDown=false,runScore=0,combo=0,comboTimer=0,shake=0,popups=[],sparks=[],shiftChargePct=-1,puzzleTimers=new Set(),puzzleToken=0,puzzleState=null;
 for(let i=0;i<40;i++)parts.push({x:Math.random()*W,y:Math.random()*H,s:.4+Math.random()*1.6});
-const show=h=>{ui.innerHTML=h;ui.style.display='flex'};
+function clearPuzzleTimers(){puzzleToken++;for(const timer of puzzleTimers)clearTimeout(timer);puzzleTimers.clear();puzzleState=null;delete window.pp;delete window.fl}
+function schedulePuzzle(fn,delay,token=puzzleToken){const timer=setTimeout(()=>{puzzleTimers.delete(timer);if(token===puzzleToken)fn()},delay);puzzleTimers.add(timer)}
+function show(h){clearPuzzleTimers();shiftButton.style.display='none';hud.hidden=true;ui.innerHTML=h;ui.style.display='flex'}
 const cur=()=>L[S.lvl].o[S.sel[S.lvl]??0];
 function drawChar(c,x,y,o,sc){if(o.im&&o.im.naturalWidth){const hh=78*sc,w=hh*o.im.naturalWidth/o.im.naturalHeight;c.save();c.shadowColor='rgba(255,255,255,.7)';c.shadowBlur=7;c.drawImage(o.im,x-w/2,y-hh*.42,w,hh);c.restore();return}c.save();c.translate(x,y);c.scale(sc,sc);
  c.fillStyle='#2b2b3a';c.fillRect(-9,18,7,16);c.fillRect(2,18,7,16);
@@ -52,6 +69,32 @@ function drawChar(c,x,y,o,sc){if(o.im&&o.im.naturalWidth){const hh=78*sc,w=hh*o.
  c.fillStyle='#222';c.fillRect(-6,-18,3,4);c.fillRect(3,-18,3,4);
  if(o.helm){c.fillStyle='rgba(180,220,255,.45)';c.strokeStyle='#fff';c.lineWidth=2;c.beginPath();c.arc(0,-16,17,0,7);c.fill();c.stroke()}
  if(o.hat){c.font='24px serif';c.textAlign='center';c.fillText(o.hat,0,-26)}c.restore()}
+function drawSpaceItem(it){
+ g.save();g.translate(it.x,it.y);g.shadowBlur=18;g.shadowColor=it.bad?'#ff785f':'#8cf4e4';
+ if(it.e==='star'){
+  g.rotate(T*.012);g.fillStyle='#ffe9a8';g.strokeStyle='#fff9dc';g.lineWidth=2;g.beginPath();
+  for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?9:20,x=Math.cos(a)*r,y=Math.sin(a)*r;if(i===0)g.moveTo(x,y);else g.lineTo(x,y)}
+  g.closePath();g.fill();g.stroke();g.fillStyle='rgba(255,255,255,.8)';g.beginPath();g.arc(-3,-4,3,0,Math.PI*2);g.fill();
+ }else if(it.e==='cell'){
+  g.fillStyle='#88f0d7';g.strokeStyle='#e7fff8';g.lineWidth=2;g.beginPath();g.roundRect(-13,-17,26,34,6);g.fill();g.stroke();g.fillStyle='#d5fff3';g.fillRect(-6,-21,12,4);
+  g.fillStyle='#147a76';g.beginPath();g.moveTo(2,-11);g.lineTo(-6,1);g.lineTo(0,1);g.lineTo(-3,12);g.lineTo(7,-3);g.lineTo(1,-3);g.closePath();g.fill();
+ }else{
+  if(it.dir<0){g.fillStyle='rgba(255,115,91,.7)';g.beginPath();g.moveTo(-7,12);g.lineTo(-18,29);g.lineTo(1,17);g.fill()}
+  g.fillStyle='#bc776c';g.strokeStyle='#ffd2aa';g.lineWidth=2;g.beginPath();g.moveTo(-18,-5);g.lineTo(-11,-15);g.lineTo(0,-18);g.lineTo(15,-9);g.lineTo(18,3);g.lineTo(10,15);g.lineTo(-4,18);g.lineTo(-16,10);g.closePath();g.fill();g.stroke();
+  g.fillStyle='rgba(73,40,47,.65)';g.beginPath();g.arc(-6,-4,4,0,Math.PI*2);g.arc(8,5,3,0,Math.PI*2);g.fill();
+ }
+ g.restore();
+}
+function burst(x,y,color,count){
+ for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,s=1+Math.random()*3;sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.45+Math.random()*.35,max:.8,color})}
+ if(sparks.length>180)sparks.splice(0,sparks.length-180);
+}
+function collectItem(it){
+ got++;combo=comboTimer>0?Math.min(combo+1,5):1;comboTimer=2.5;
+ const gain=10*combo;runScore+=gain;burst(it.x,it.y,it.e==='star'?'#ffec9c':'#88f0d7',14);
+ popups.push({x:it.x,y:it.y,life:.8,text:combo>1?`+${gain}  ×${combo}`:`+${gain}`});
+ if(popups.length>12)popups.shift();
+}
 function scene(i,l){const a=T*.3;
  if(i==0){g.fillStyle='#ffd9a0';g.beginPath();g.arc(270,130,46,0,7);g.fill();g.strokeStyle='rgba(255,200,150,.6)';g.lineWidth=6;g.beginPath();g.ellipse(270,130,76,16,-.4,0,7);g.stroke();
   const r=g.createRadialGradient(80,420,10,80,420,160);r.addColorStop(0,'rgba(180,80,255,.35)');r.addColorStop(1,'transparent');g.fillStyle=r;g.fillRect(0,260,260,300)}
@@ -64,40 +107,140 @@ function scene(i,l){const a=T*.3;
   g.fillStyle='#6b3e1d';for(const x of[50,280]){g.beginPath();g.moveTo(x-30,520);g.lineTo(x,450);g.lineTo(x+30,520);g.fill()}
   g.font=(34+Math.sin(a*4)*4)+'px serif';g.textAlign='center';g.fillText('🔥',165,525)}
  if(i==4){for(let k=0;k<9;k++){const h=140+(k*53%140),x=k*42;g.fillStyle='#16233f';g.fillRect(x,H-h,36,h);g.fillStyle='#ffe58a';for(let y=H-h+10;y<H-10;y+=18)for(let z=6;z<30;z+=12)if((x+y+z)%3)g.fillRect(x+z,y,5,8)}}}
-function menu(){mode='menu';show(`<div class="big">⏳</div><h1>Time Traveler</h1><p>Journey from deep space through history. Complete tasks & puzzles, earn points, and dress for every age!</p><p>💰 Points: <b>${S.w}</b> &nbsp; Level: <b>${S.lvl+1}/5</b></p><button onclick="wardrobe()">▶ Play</button><button class="s" onclick="reset()">Restart</button>`)}
+function menu(){mode='menu';show(`<p class="eyebrow">A time-travel arcade game</p><h1>Time Traveler</h1><p>The timeline is coming apart. Recover the cores, one age at a time.</p><p>FIELD NOTES&nbsp;&nbsp; ${String(S.w).padStart(3,'0')} points &nbsp;·&nbsp; Age ${S.lvl+1} of 5</p><button onclick="wardrobe()">Continue</button><button class="s" onclick="reset()">New run</button>`)}
 function reset(){S={w:0,own:['0-0'],lvl:0,sel:{0:0}};save();menu()}
 function wardrobe(){mode='menu';const l=L[S.lvl],sel=S.sel[S.lvl],owned=l.o.some((o,i)=>S.own.includes(S.lvl+'-'+i));
- show(`<h1>👕 Wardrobe</h1><p><b>${l.n}</b></p><p>Pick your outfit • 💰 ${S.w}</p><div class="row">${l.o.map((o,i)=>{const k=S.lvl+'-'+i,has=S.own.includes(k);return `<div class="oc ${sel===i&&has?'on':''}"><canvas id="p${i}" width="84" height="110"></canvas><b>${o.n}</b><small>${o.perk?PK[o.perk]:'No perk'}</small>${has?`<button onclick="eq(${i})">${sel===i?'Equipped':'Equip'}</button>`:`<button ${S.w<o.cost?'disabled':''} onclick="buy(${i})">Buy ${o.cost}</button>`}</div>`}).join('')}</div>${owned?`<button onclick="intro()">Start ➜</button>`:`<p>Buy an outfit to enter this age!</p>`}${!owned&&S.lvl>0&&S.w<Math.min(...l.o.map(o=>o.cost))?'<button class="s" onclick="S.lvl--;save();wardrobe()">Replay previous age</button>':''}`);
+ show(`<p class="eyebrow">Field gear · ${String(S.w).padStart(3,'0')} points</p><h1>${l.n}</h1><p>Choose your suit for the next run.</p><div class="row">${l.o.map((o,i)=>{const k=S.lvl+'-'+i,has=S.own.includes(k);return `<div class="oc ${sel===i&&has?'on':''}"><canvas id="p${i}" width="84" height="110"></canvas><b>${o.n}</b><small>${o.perk?PK[o.perk]:'Standard issue'}</small>${has?`<button onclick="eq(${i})">${sel===i?'Equipped':'Equip'}</button>`:`<button ${S.w<o.cost?'disabled':''} onclick="buy(${i})">Buy ${o.cost}</button>`}</div>`}).join('')}</div>${owned?`<button onclick="intro()">Enter age</button>`:`<p>Earn enough points in the previous age to unlock a suit.</p>`}${!owned&&S.lvl>0&&S.w<Math.min(...l.o.map(o=>o.cost))?'<button class="s" onclick="S.lvl--;save();wardrobe()">Replay previous age</button>':''}`);
  l.o.forEach((o,i)=>{const c=document.getElementById('p'+i).getContext('2d');drawChar(c,42,44,o,1.15)})}
 function eq(i){S.sel[S.lvl]=i;save();wardrobe()}
 function buy(i){S.w-=L[S.lvl].o[i].cost;S.own.push(S.lvl+'-'+i);S.sel[S.lvl]=i;save();wardrobe()}
 function intro(){const l=L[S.lvl];if(!S.own.includes(S.lvl+'-'+(S.sel[S.lvl]??-1)))return wardrobe();
- show(`<h1>${l.n}</h1><p>🎯 ${l.task}</p><p>Drag your finger to move. You have 3 ❤️.</p><p>Then solve a puzzle for bonus points!</p><button onclick="start()">Go!</button>`)}
-function start(){ui.style.display='none';mode='play';P={x:W/2,y:H-90};tx=P.x;ty=P.y;items=[];got=0;const pk=cur().perk;lives=pk=='life'?4:3;t=0}
-function after(){const l=L[S.lvl];show(`<div class="big">${l.ic[0]}</div><h1>Puzzle Time!</h1><p>${l.puz=='simon'?'Repeat the light sequence to fix the machine.':'Match all pairs to unlock the treasure.'}</p><button onclick="${l.puz}()">Solve</button>`)}
-function simon(){const l=L[S.lvl],cols=['#ef4444','#22c55e','#3b82f6','#eab308'],n=3+Math.floor(S.lvl/2),seq=Array.from({length:n},()=>Math.floor(Math.random()*4));let u=0,ok=false;
- show(`<h1>Memory Sequence</h1><p id="m">Watch...</p><div class="grid" style="grid-template-columns:84px 84px">${cols.map((c,i)=>`<button class="pad" id="b${i}" style="background:${c}" onclick="pp(${i})">${l.ic[i]}</button>`).join('')}</div>`);
- const f=i=>{const b=document.getElementById('b'+i);if(!b)return;b.classList.add('lit');setTimeout(()=>b.classList.remove('lit'),350)};
- window.pp=i=>{if(!ok)return;f(i);if(i!=seq[u]){ok=false;document.getElementById('m').textContent='Oops! Watch again...';return setTimeout(play,900)}u++;if(u==n){ok=false;fin(30)}};
- function play(){u=0;ok=false;seq.forEach((s,k)=>setTimeout(()=>f(s),600+k*600));setTimeout(()=>{ok=true;const m=document.getElementById('m');if(m)m.textContent='Your turn!'},600+n*600)}play()}
-function match(){const l=L[S.lvl],d=[...l.ic,...l.ic].sort(()=>Math.random()-.5);let a=null,lock=false,done=0;
- show(`<h1>Match the Pairs</h1><p>Tap cards to flip</p><div class="grid" style="grid-template-columns:repeat(4,64px)">${d.map((e,i)=>`<button class="card" id="k${i}" onclick="fl(${i})">?</button>`).join('')}</div>`);
- window.fl=i=>{const b=document.getElementById('k'+i);if(lock||b.dataset.d||a===i)return;b.textContent=d[i];if(a===null){a=i;return}
-  const p=a,pb=document.getElementById('k'+p);a=null;if(d[p]==d[i]){b.dataset.d=pb.dataset.d=1;b.style.background=pb.style.background='#16a34a';if(++done==4)setTimeout(()=>fin(30),500)}else{lock=true;setTimeout(()=>{b.textContent=pb.textContent='?';lock=false},700)}}}
-function fin(bonus){const l=L[S.lvl],m=cur().perk=='bonus'?1.5:1,pts=Math.round((got*10+bonus)*m);S.w+=pts;
- if(S.lvl<4){S.lvl++;save();show(`<div class="big">🎉</div><h1>Age Complete!</h1><p>+${pts} points (incl. ${bonus} puzzle bonus${m>1?', x1.5 outfit perk':''})</p><p>💰 Total: ${S.w}</p><p>Next: <b>${L[S.lvl].n}</b></p><button onclick="wardrobe()">Visit Wardrobe ➜</button>`)}
- else{save();show(`<div class="big">🏆</div><h1>You did it!</h1><p>You journeyed from space to today. Final points: ${S.w}</p><button onclick="reset()">Play Again</button>`)}}
-function over(){mode='end';show(`<div class="big">💥</div><h1>Game Over</h1><p>Try again!</p><button onclick="start()">Retry</button><button class="s" onclick="wardrobe()">Wardrobe</button>`)}
-function pos(e){const r=cv.getBoundingClientRect();tx=Math.max(25,Math.min(W-25,(e.clientX-r.left)/r.width*W));ty=Math.max(70,Math.min(H-40,(e.clientY-r.top)/r.height*H-50))}
+ show(`<p class="eyebrow">Age ${S.lvl+1} · Briefing</p><h1>${l.n}</h1>${l.story?`<p>${l.story}</p>`:''}<p>${l.task}</p><p>Drag to steer. You have ${cur().perk==='life'?4:3} lives. Clear the run to reach the core puzzle.</p>${S.lvl===0?'<p><b>Gravity shift</b> — tap SHIFT, press Shift or X, or use gamepad A. The field pulls in nearby cores and sends debris back.</p>':''}<button onclick="start()">Begin run</button>`)}
+function start(){ui.style.display='none';mode='play';hud.hidden=false;P={x:W/2,y:H-90};tx=P.x;ty=P.y;items=[];got=0;runScore=0;combo=0;comboTimer=0;popups=[];sparks=[];shake=0;reverseGravity=false;shiftAvailableAt=0;shiftPulse=0;shiftField=0;shiftChargePct=-1;const pk=cur().perk;lives=pk==='life'?4:3;t=0;shiftButton.style.display=S.lvl===0?'block':'none';updateShiftButton()}
+function updateShiftButton(){const direction=shiftField>0?'FIELD ACTIVE':`GRAVITY ${reverseGravity?'UP':'DOWN'}`;if(shiftHint.textContent!==direction)shiftHint.textContent=direction;shiftButton.classList.toggle('reverse',reverseGravity);const remaining=Math.max(0,shiftAvailableAt-performance.now()),ready=remaining===0,label=ready?'SHIFT · READY':'SHIFT';const chargePct=Math.floor(100*(1-remaining/3200));if(chargePct!==shiftChargePct){shiftChargePct=chargePct;shiftCharge.style.transform=`scaleX(${chargePct/100})`}if(shiftButton.querySelector('span').textContent!==label)shiftButton.querySelector('span').textContent=label;const shouldDisable=!ready;if(shiftButton.disabled!==shouldDisable)shiftButton.disabled=shouldDisable;const aria=ready?'Shift gravity and pull in nearby cores':'Gravity shift recharging';if(shiftButton.getAttribute('aria-label')!==aria)shiftButton.setAttribute('aria-label',aria)}
+function shiftGravity(){const now=performance.now();if(mode!=='play'||S.lvl!==0||now<shiftAvailableAt)return;reverseGravity=!reverseGravity;shiftAvailableAt=now+3200;shiftPulse=.55;shiftField=1.15;shake=.12;for(const item of items)item.dir*=-1;updateShiftButton()}
+shiftButton.addEventListener('pointerdown',e=>{e.preventDefault();shiftGravity()});
+window.addEventListener('keydown',e=>{if((e.key==='Shift'||e.key.toLowerCase()==='x')&&!e.repeat){e.preventDefault();shiftGravity()}});
+function after(){const l=L[S.lvl];show(`<p class="eyebrow">Core secured · Run score ${runScore}</p><h1>One last signal</h1><p>${l.puz==='simon'?'Repeat the signal sequence to stabilize the core.':'Match the signal pairs to stabilize the core.'}</p><button onclick="${l.puz}()">Take the puzzle</button>`)}
+function updatePuzzleClock(){
+ if(!puzzleState)return;
+ let text=puzzleState.detail;
+ if(puzzleState.deadline){const seconds=Math.max(0,Math.ceil((puzzleState.deadline-performance.now())/1000));text+=` · ${seconds}s`;if(seconds===0){puzzleState.onTimeout();return}}
+ const meta=document.getElementById('puzzleMeta');
+ if(meta&&meta.textContent!==text)meta.textContent=text;
+}
+function beginPuzzle({detail,seconds=0,onTimeout}){
+ mode='puzzle';
+ puzzleState={detail,deadline:seconds?performance.now()+seconds*1000:0,onTimeout:onTimeout||(()=>{})};
+ updatePuzzleClock();
+ return puzzleToken;
+}
+function puzzleFailed(reason){
+ const retry=L[S.lvl].puz;
+ mode='puzzle-failed';
+ show(`<p class="eyebrow">Core signal lost</p><h1>${reason}</h1><p>The run score is safe. Reset the puzzle and try again.</p><button onclick="${retry}()">Retry puzzle</button>`);
+}
+function simon(){
+ const cols=['#ef4444','#22c55e','#3b82f6','#eab308'],marks=['●','◆','▲','■'],difficulty={0:{length:5,beat:560},2:{length:7,beat:470},4:{length:9,beat:390}}[S.lvl]||{length:5,beat:520};
+ const {length:n,beat}=difficulty,seq=Array.from({length:n},()=>Math.floor(Math.random()*4)),maxMistakes=3;let u=0,ready=false,mistakes=0;
+ show(`<p class="eyebrow">Core puzzle · Memory test</p><h1>Repeat the signal</h1><p class="puzzle-meta" id="puzzleMeta"></p><p class="puzzle-note" id="m">Watch the full sequence.</p><div class="grid" style="grid-template-columns:84px 84px">${cols.map((c,i)=>`<button class="pad" id="b${i}" style="background:${c}" aria-label="Signal ${i+1}" onclick="pp(${i})">${marks[i]}</button>`).join('')}</div><p>One miss resets the sequence. Three misses lose the signal.</p>`);
+ const token=beginPuzzle({detail:`${n} signals · ${maxMistakes} misses`,onTimeout:()=>{}});
+ const flash=(i)=>{const b=document.getElementById('b'+i);if(!b)return;b.classList.add('lit');schedulePuzzle(()=>b.classList.remove('lit'),Math.min(260,beat*.58),token)};
+ function play(){
+  if(token!==puzzleToken)return;u=0;ready=false;
+  const note=document.getElementById('m');if(note)note.textContent=mistakes?`Miss ${mistakes}/${maxMistakes} · watch again`:'Watch the full sequence.';
+  seq.forEach((signal,k)=>schedulePuzzle(()=>flash(signal),450+k*beat,token));
+  schedulePuzzle(()=>{ready=true;const status=document.getElementById('m');if(status)status.textContent=`Your turn · 0/${n}`},450+n*beat,token);
+ }
+ window.pp=i=>{
+  if(!ready||token!==puzzleToken)return;
+  flash(i);
+  if(i!==seq[u]){
+   ready=false;mistakes++;const note=document.getElementById('m');
+   if(mistakes>=maxMistakes){puzzleFailed('Three strikes');return}
+   if(note)note.textContent=`Wrong signal · ${maxMistakes-mistakes} misses left`;
+   schedulePuzzle(play,750,token);return;
+  }
+  u++;const note=document.getElementById('m');if(note)note.textContent=`Your turn · ${u}/${n}`;
+  if(u===n){ready=false;fin(30)}
+ };
+ play();
+}
+function match(){
+ const settings=S.lvl===1?{pairs:6,seconds:50,misses:3}:{pairs:8,seconds:42,misses:2};
+ const marks=['●','◆','▲','■','✚','⬟','✦','⬢'],deck=[...marks.slice(0,settings.pairs),...marks.slice(0,settings.pairs)].sort(()=>Math.random()-.5);
+ let first=null,locked=false,found=0,misses=0;
+ show(`<p class="eyebrow">Core puzzle · Recall test</p><h1>Find every pair</h1><p class="puzzle-meta" id="puzzleMeta"></p><p class="puzzle-note" id="m">Study the layout. The clock starts when the cards turn.</p><div class="grid puzzle-grid">${deck.map((mark,i)=>`<button class="card face preview" id="k${i}" aria-label="Preview card ${mark}" onclick="fl(${i})">${mark}</button>`).join('')}</div><p>A mismatch counts as a miss. ${settings.misses} misses ends the attempt.</p>`);
+ const token=beginPuzzle({detail:`${settings.pairs} pairs · ${settings.misses} misses`,onTimeout:()=>puzzleFailed('Time expired')});
+ locked=true;
+ schedulePuzzle(()=>{for(const card of document.querySelectorAll('.card.preview')){card.textContent='?';card.classList.remove('face','preview');card.setAttribute('aria-label',`Hidden card ${Number(card.id.slice(1))+1}`)}locked=false;const note=document.getElementById('m');if(note)note.textContent='Cards are down. Find the pairs.';puzzleState.deadline=performance.now()+settings.seconds*1000;updatePuzzleClock()},1900,token);
+ window.fl=i=>{
+  if(locked||token!==puzzleToken)return;
+  const card=document.getElementById('k'+i);if(!card||card.dataset.matched||card===first)return;
+  card.textContent=deck[i];card.classList.add('face');card.setAttribute('aria-label',`Card ${deck[i]}`);card.dataset.open='true';
+  if(!first){first=card;return}
+  const prior=first,priorIndex=Number(prior.id.slice(1));first=null;
+  if(deck[priorIndex]===deck[i]){
+   card.dataset.matched=prior.dataset.matched='true';card.classList.remove('face');prior.classList.remove('face');card.classList.add('matched');prior.classList.add('matched');
+   found++;const note=document.getElementById('m');if(note)note.textContent=`Pairs found · ${found}/${settings.pairs}`;
+   if(found===settings.pairs){locked=true; schedulePuzzle(()=>fin(30),400,token)}
+   return;
+  }
+  misses++;const note=document.getElementById('m');if(note)note.textContent=`Mismatch · ${settings.misses-misses} misses left`;
+  locked=true;
+  if(misses>=settings.misses){schedulePuzzle(()=>puzzleFailed('Too many mismatches'),550,token);return}
+  schedulePuzzle(()=>{card.textContent=prior.textContent='?';card.classList.remove('face');prior.classList.remove('face');card.removeAttribute('data-open');prior.removeAttribute('data-open');card.setAttribute('aria-label',`Hidden card ${i+1}`);prior.setAttribute('aria-label',`Hidden card ${priorIndex+1}`);locked=false},700,token);
+ };
+}
+function fin(bonus){mode='menu';const m=cur().perk==='bonus'?1.5:1,pts=Math.round((runScore+bonus)*m);S.w+=pts;
+ if(S.lvl<4){S.lvl++;save();show(`<p class="eyebrow">Timeline restored · +${pts} points</p><h1>${L[S.lvl].n}</h1><p>The core is stable. A new signal is coming from the next age.</p><p>Run score ${runScore} · Puzzle ${bonus}${m>1?' · Suit bonus applied':''}</p><button onclick="wardrobe()">Prepare for the next age</button>`)}
+ else{save();show(`<p class="eyebrow">The timeline holds</p><h1>Journey complete</h1><p>You recovered every core and carried the timeline from deep space to the colony.</p><p>Final balance · ${S.w} points</p><button onclick="reset()">Start a new run</button>`)}}
+function over(){mode='end';show(`<p class="eyebrow">Signal lost</p><h1>Run ended</h1><p>Your score was ${runScore}. The core is still out there.</p><button onclick="start()">Try again</button><button class="s" onclick="wardrobe()">Return to field gear</button>`)}
+function pos(e){const r=cv.getBoundingClientRect(),touchOffset=e.pointerType==='touch'?50:0;tx=Math.max(25,Math.min(W-25,(e.clientX-r.left)/r.width*W));ty=Math.max(70,Math.min(H-40,(e.clientY-r.top)/r.height*H-touchOffset))}
 cv.addEventListener('pointermove',pos);cv.addEventListener('pointerdown',pos);
-function loop(){requestAnimationFrame(loop);T++;const l=L[S.lvl],gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,l.sky[0]);gr.addColorStop(1,l.sky[1]);g.fillStyle=gr;g.fillRect(0,0,W,H);bg(S.lvl);
- g.globalAlpha=.7;g.fillStyle=S.lvl==2||S.lvl==3?'#ffffff':'#ffd9a0';parts.forEach(s=>{s.y+=s.s*(S.lvl==1?-.5:.6);if(s.y>H||s.y<0){s.y=S.lvl==1?H:0;s.x=Math.random()*W}g.fillRect(s.x,s.y,s.s*1.5,s.s*1.5)});g.globalAlpha=1;
- if(S.lvl==1)lavaFloor();if(mode!=='play')return;t++;
- if(t%Math.max(16,46-S.lvl*4)==0){const bad=Math.random()<.35+S.lvl*.04,a=bad?l.bad:l.good;items.push({x:25+Math.random()*(W-50),y:-20,e:a[Math.random()*a.length|0],bad,v:1.7+S.lvl*.4+Math.random()})}
- P.x+=(tx-P.x)*.22;P.y+=(ty-P.y)*.22;const R=cur().perk=='magnet'?58:36;g.textAlign='center';g.font='40px serif';
- for(let i=items.length-1;i>=0;i--){const it=items[i];it.y+=it.v;{const cx=it.x,cy=it.y-14,k=it.bad?'255,60,60':'255,235,120',rg=g.createRadialGradient(cx,cy,6,cx,cy,34);rg.addColorStop(0,'rgba('+k+',.9)');rg.addColorStop(1,'rgba('+k+',0)');g.fillStyle=rg;g.beginPath();g.arc(cx,cy,34,0,7);g.fill();g.fillStyle='rgba(10,10,30,.55)';g.beginPath();g.arc(cx,cy,25,0,7);g.fill();g.lineWidth=3;g.strokeStyle=it.bad?'#ff4545':'#ffe96b';g.beginPath();g.arc(cx,cy,25+Math.sin(T*.25)*2,0,7);g.stroke()}g.fillText(it.e,it.x,it.y);
-  if(Math.hypot(it.x-P.x,it.y-P.y)<R){items.splice(i,1);if(it.bad){if(--lives<=0)return over()}else if(++got>=l.goal){mode='puz';return after()}}else if(it.y>H+30)items.splice(i,1)}
- g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(P.x,P.y+54,26,7,0,0,7);g.fill();drawChar(g,P.x,P.y,cur(),1.3);
- g.fillStyle='rgba(0,0,0,.45)';g.fillRect(0,0,W,38);g.fillStyle='#fff';g.font='bold 14px sans-serif';g.textAlign='left';g.fillText(`Lv ${S.lvl+1} 🎯 ${got}/${l.goal}`,10,24);g.textAlign='right';g.fillText(`${'❤️'.repeat(lives)} 💰${S.w}`,W-10,24)}
+function loop(){
+ requestAnimationFrame(loop);T++;
+ const l=L[S.lvl],gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,l.sky[0]);gr.addColorStop(1,l.sky[1]);g.fillStyle=gr;g.fillRect(0,0,W,H);bg(S.lvl);
+ g.globalAlpha=.65;g.fillStyle=S.lvl===2||S.lvl===3?'#fff':'#c7e9ef';
+ for(const s of parts){s.y+=s.s*(S.lvl===1?-.5:.6);if(s.y>H||s.y<0){s.y=S.lvl===1?H:0;s.x=Math.random()*W}g.fillRect(s.x,s.y,s.s*1.5,s.s*1.5)}
+ g.globalAlpha=1;if(S.lvl===1)lavaFloor();if(mode==='puzzle'){updatePuzzleClock();return}if(mode!=='play')return;
+
+ t++;shiftPulse=Math.max(0,shiftPulse-1/60);shiftField=Math.max(0,shiftField-1/60);
+ if(comboTimer>0){comboTimer=Math.max(0,comboTimer-1/60);if(comboTimer===0)combo=0}
+ const pad=navigator.getGamepads?.()[0],pressed=!!pad?.buttons?.[0]?.pressed;
+ if(pressed&&!gamepadShiftDown)shiftGravity();gamepadShiftDown=pressed;
+ updateShiftButton();
+ if(t%Math.max(16,46-S.lvl*4)===0){
+  const bad=Math.random()<.35+S.lvl*.04,a=bad?l.bad:l.good,dir=reverseGravity?-1:1;
+  items.push({x:25+Math.random()*(W-50),y:dir<0?H+20:-20,e:a[Math.random()*a.length|0],bad,v:1.7+S.lvl*.4+Math.random(),dir});
+ }
+ P.x+=(tx-P.x)*.22;P.y+=(ty-P.y)*.22;
+ const R=cur().perk==='magnet'?58:36,shakeX=shake>0?(Math.random()-.5)*shake*30:0,shakeY=shake>0?(Math.random()-.5)*shake*30:0;
+ shake=Math.max(0,shake-.018);g.save();g.translate(shakeX,shakeY);
+ if(S.lvl===0&&shiftField>0){g.save();g.globalAlpha=shiftField*.48;g.strokeStyle='#9df4e8';g.lineWidth=2;g.beginPath();g.arc(P.x,P.y,44+(1.15-shiftField)*74,0,Math.PI*2);g.stroke();g.restore()}
+ let cleared=false;
+ for(let i=items.length-1;i>=0;i--){
+  const it=items[i];it.y+=it.v*it.dir;
+  if(S.lvl===0&&shiftField>0&&!it.bad){it.x+=(P.x-it.x)*.075;it.y+=(P.y-it.y)*.045}
+  const cx=it.x,cy=it.y-14,k=it.bad?'255,110,90':'145,240,220',rg=g.createRadialGradient(cx,cy,4,cx,cy,36);
+  rg.addColorStop(0,`rgba(${k},.55)`);rg.addColorStop(1,`rgba(${k},0)`);g.fillStyle=rg;g.beginPath();g.arc(cx,cy,36,0,Math.PI*2);g.fill();
+  if(S.lvl===0)drawSpaceItem(it);else{g.fillStyle=it.bad?'#ff765f':'#fff0a1';g.font='34px serif';g.textAlign='center';g.fillText(it.e,it.x,it.y)}
+  if(Math.hypot(it.x-P.x,it.y-P.y)<R){
+   items.splice(i,1);
+   if(it.bad){lives--;combo=0;comboTimer=0;shake=.28;burst(it.x,it.y,'#ff765f',18);if(lives<=0){g.restore();over();return}}
+   else{collectItem(it);if(got>=l.goal){mode='puz';cleared=true;break}}
+  }else if(it.y>H+30||it.y<-30)items.splice(i,1);
+ }
+ if(cleared){g.restore();after();return}
+ for(let i=sparks.length-1;i>=0;i--){const s=sparks[i];s.x+=s.vx;s.y+=s.vy;s.vy+=.035;s.life-=1/60;if(s.life<=0){sparks.splice(i,1);continue}g.globalAlpha=Math.min(1,s.life/s.max);g.fillStyle=s.color;g.beginPath();g.arc(s.x,s.y,2.4*s.life,0,Math.PI*2);g.fill()}
+ g.globalAlpha=1;
+ for(let i=popups.length-1;i>=0;i--){const p=popups[i];p.y-=.7;p.life-=1/60;if(p.life<=0){popups.splice(i,1);continue}g.globalAlpha=Math.min(1,p.life*2);g.fillStyle='#e2fff9';g.font='bold 15px system-ui';g.textAlign='center';g.fillText(p.text,p.x,p.y)}
+ g.globalAlpha=1;g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(P.x,P.y+54,26,7,0,0,7);g.fill();
+ drawChar(g,P.x,P.y+Math.sin(T*.12)*2,cur(),1.3+Math.sin(T*.12)*.025);
+ if(shiftPulse>0){g.globalAlpha=shiftPulse*1.4;g.strokeStyle=reverseGravity?'#ffc18a':'#9df4e8';g.lineWidth=3;g.beginPath();g.arc(P.x,P.y,24+(0.55-shiftPulse)*160,0,Math.PI*2);g.stroke();g.globalAlpha=1}
+ g.restore();
+ const goal=`${got} / ${l.goal} CORES`,score=`SCORE ${String(runScore).padStart(3,'0')}${combo>1?` · x${combo}`:''}`,lifeText=`LIVES · ${lives}`;
+ if(goalText.textContent!==goal)goalText.textContent=goal;if(scoreText.textContent!==score)scoreText.textContent=score;if(livesText.textContent!==lifeText)livesText.textContent=lifeText;
+}
 menu();loop();
 </script></body></html>
