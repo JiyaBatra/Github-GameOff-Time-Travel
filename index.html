@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Time Traveler – Space to Today</title>
+<style>
+:root{--bg:#0b0d1a;--fg:#fff;--card:#1b1f3a;--acc:#ffd23f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b0d1a;--fg:#fff}}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:system-ui,sans-serif;overflow:hidden;touch-action:none}
+#w{height:100%;display:flex;align-items:center;justify-content:center}
+#box{position:relative;height:100%;aspect-ratio:360/560;max-width:100%}
+canvas#c{width:100%;height:100%;display:block;border-radius:12px}
+#ui{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px;background:rgba(5,6,18,.5);backdrop-filter:blur(3px);border-radius:12px;overflow:auto}
+h1{margin:0 0 6px;font-size:24px;color:var(--acc)}p{margin:4px 0;font-size:14px;line-height:1.35}
+button{background:var(--acc);color:#111;border:0;border-radius:12px;padding:10px 18px;font-size:15px;font-weight:700;margin:5px 3px}
+button.s{background:#3a4075;color:#fff}button:disabled{opacity:.35}
+.row{display:flex;gap:8px;width:100%}.oc{flex:1;background:var(--card);border-radius:12px;padding:8px 4px;border:2px solid transparent}.oc.on{border-color:var(--acc)}.oc b{font-size:12px;display:block}.oc small{font-size:11px;opacity:.8;display:block;min-height:26px}.oc button{padding:6px 8px;font-size:12px;margin:4px 0 0}
+.big{font-size:50px}.grid{display:grid;gap:8px;margin:10px 0}.pad{width:84px;height:84px;border-radius:16px;opacity:.45;border:0;padding:0}.pad.lit{opacity:1;box-shadow:0 0 22px #fff}
+.card{width:64px;height:76px;border-radius:12px;background:#3a4075;font-size:32px;padding:0;color:#fff}
+</style></head><body><div id="w"><div id="box"><canvas id="c" width="360" height="560"></canvas><div id="ui"></div></div></div>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d'),ui=document.getElementById('ui'),W=360,H=560;
+const BG=["assets/backgrounds/bg1_space.jpg", "assets/backgrounds/bg2_lava.jpg", "assets/backgrounds/bg3_dinosaur.jpg", "assets/backgrounds/bg4_tribal.jpg", "assets/backgrounds/bg5_future.jpg"];const STAR=new Image();STAR.src='assets/backgrounds/bg_starfield.jpg';const IM=BG.map(s=>{const i=new Image();i.src=s;return i});
+function bg(i){const m=IM[i];if(!m||!m.naturalWidth)return;const w=W*1.2,hh=w*m.naturalHeight/m.naturalWidth,ox=-(w-W)/2+Math.sin(T*.005)*(w-W)/2;g.drawImage(m,ox,(H-hh)/2,w,hh);if(i==0&&STAR.naturalWidth){const sw=H*STAR.naturalWidth/STAR.naturalHeight,sx=-((T*.35)%sw);g.save();g.globalCompositeOperation='lighter';g.globalAlpha=.9;g.drawImage(STAR,sx,0,sw,H);g.drawImage(STAR,sx+sw,0,sw,H);g.restore()}g.fillStyle=i==1?'rgba(255,60,0,.2)':i==0?'rgba(0,0,0,.05)':'rgba(0,0,0,.22)';g.fillRect(0,0,W,H);const v=g.createLinearGradient(0,H-160,0,H);v.addColorStop(0,'transparent');v.addColorStop(1,'rgba(0,0,0,.5)');g.fillStyle=v;g.fillRect(0,H-160,W,160)}
+function lavaFloor(){const a=T*.05;g.fillStyle='#ff4a0a';g.beginPath();g.moveTo(0,530);for(let x=0;x<=W;x+=20)g.lineTo(x,522+Math.sin(x*.05+a)*5);g.lineTo(W,H);g.lineTo(0,H);g.fill()}
+const O=(n,col,hat,cost,perk,helm)=>({n,col,hat,cost,perk,helm});
+const PK={life:'+1 life',magnet:'Bigger pickup range',bonus:'x1.5 points'};
+const L=[
+{n:'Deep Space',sky:['#02030f','#241466'],goal:8,task:'Collect 8 oxygen cells & stars. Dodge asteroids!',good:['⭐','🔋'],bad:['☄️'],puz:'simon',ic:['🚀','🛰️','🌟','🪐'],
+ o:[O('Space Suit (FREE)','#e8eef7','',0,'',1),O('Neon Suit','#7b5cff','',40,'life',1),O('Gold Suit','#ffc83d','',80,'bonus',1)]},
+{n:'Young Earth: Lava Age',sky:['#2b0a05','#e0561a'],goal:10,task:'Collect water & crystals. Avoid fire & rocks!',good:['💧','💎'],bad:['🔥','🪨'],puz:'match',ic:['🌋','💎','💧','🔥'],
+ o:[O('Heat Suit','#ff6a3d','⛑️',40,'life'),O('Rock Armor','#6b6b78','🪖',60,'magnet'),O('Obsidian Cloak','#2a2233','🎩',90,'bonus')]},
+{n:'Age of Dinosaurs',sky:['#7cc7ee','#d9f2c0'],goal:12,task:'Collect eggs & meat. Run from the dinos!',good:['🥚','🍖'],bad:['🦖','🦕'],puz:'simon',ic:['🥚','🦴','🦖','🌴'],
+ o:[O('Explorer','#8a6b3a','🤠',50,'life'),O('Camo Gear','#3f7d3a','🪖',70,'magnet'),O('Ranger','#2f6fbf','👒',100,'bonus')]},
+{n:'Tribal Age (Jiga Lala Huhu!)',sky:['#5b2a63','#f6a04d'],goal:14,task:'Gather fruit & wood. Beware snakes & boars!',good:['🍎','🪵'],bad:['🐍','🐗'],puz:'match',ic:['🔥','🍎','🪵','🦴'],
+ o:[O('Leaf Wrap','#4f9a3c','🌿',50,'life'),O('Fur Cloak','#a0693a','🦴',70,'magnet'),O('Chief Feathers','#c0392b','🪶',100,'bonus')]},
+{n:'Future Colony',sky:['#2a0f4a','#c04ad0'],goal:16,task:'Collect energy orbs & crystals. Dodge robots & UFOs!',good:['🔮','⚡'],bad:['🤖','🛸'],puz:'simon',ic:['🔮','🛰️','🤖','💡'],
+ o:[O('Cyber Wear','#06b6d4','🥽',60,'life'),O('Android Armor','#64748b','🤖',90,'magnet'),O('Star Commander','#e11d48','👑',120,'bonus')]}];
+const CH={"space": "assets/characters/1_space_suit.webp", "neon": "assets/characters/1_neon_suit.webp", "gold": "assets/characters/1_gold_suit.webp", "leaf": "assets/characters/4_leaf_wrap.webp", "fur": "assets/characters/4_fur_cloak.webp", "feather": "assets/characters/4_chief_feathers.webp", "cyber": "assets/characters/5_cyber_wear.webp", "android": "assets/characters/5_android_armor.webp", "rock": "assets/characters/2_rock_armor.webp", "obsid": "assets/characters/2_obsidian_cloak.webp", "cmdr": "assets/characters/5_star_commander.webp", "explorer": "assets/characters/3_explorer.webp", "camo": "assets/characters/3_camo_gear.webp", "ranger": "assets/characters/3_ranger.webp"};const CI=[["space", "neon", "gold"], [null, "rock", "obsid"], ["explorer", "camo", "ranger"], ["leaf", "fur", "feather"], ["cyber", "android", "cmdr"]].map(r=>r.map(k=>{if(!k)return null;const i=new Image();i.src=CH[k];return i}));
+CI[1][0]=(()=>{const i=new Image();i.src='assets/characters/2_heat_suit.webp';return i})();L.forEach((l,i)=>l.o.forEach((o,j)=>o.im=CI[i][j]));
+let S={w:0,own:['0-0'],lvl:0,sel:{0:0}};
+try{const s=JSON.parse(localStorage.getItem('ty')||'null');if(s)S=s}catch(e){}
+const save=()=>{try{localStorage.setItem('ty',JSON.stringify(S))}catch(e){}};
+let mode='menu',P,items,got,lives,t=0,tx,ty,parts=[],T=0;
+for(let i=0;i<40;i++)parts.push({x:Math.random()*W,y:Math.random()*H,s:.4+Math.random()*1.6});
+const show=h=>{ui.innerHTML=h;ui.style.display='flex'};
+const cur=()=>L[S.lvl].o[S.sel[S.lvl]??0];
+function drawChar(c,x,y,o,sc){if(o.im&&o.im.naturalWidth){const hh=78*sc,w=hh*o.im.naturalWidth/o.im.naturalHeight;c.save();c.shadowColor='rgba(255,255,255,.7)';c.shadowBlur=7;c.drawImage(o.im,x-w/2,y-hh*.42,w,hh);c.restore();return}c.save();c.translate(x,y);c.scale(sc,sc);
+ c.fillStyle='#2b2b3a';c.fillRect(-9,18,7,16);c.fillRect(2,18,7,16);
+ c.fillStyle=o.col;c.beginPath();c.roundRect(-14,-6,28,28,8);c.fill();
+ c.fillRect(-21,-3,8,18);c.fillRect(13,-3,8,18);
+ c.fillStyle='#f2c9a0';c.beginPath();c.arc(0,-16,13,0,7);c.fill();
+ c.fillStyle='#222';c.fillRect(-6,-18,3,4);c.fillRect(3,-18,3,4);
+ if(o.helm){c.fillStyle='rgba(180,220,255,.45)';c.strokeStyle='#fff';c.lineWidth=2;c.beginPath();c.arc(0,-16,17,0,7);c.fill();c.stroke()}
+ if(o.hat){c.font='24px serif';c.textAlign='center';c.fillText(o.hat,0,-26)}c.restore()}
+function scene(i,l){const a=T*.3;
+ if(i==0){g.fillStyle='#ffd9a0';g.beginPath();g.arc(270,130,46,0,7);g.fill();g.strokeStyle='rgba(255,200,150,.6)';g.lineWidth=6;g.beginPath();g.ellipse(270,130,76,16,-.4,0,7);g.stroke();
+  const r=g.createRadialGradient(80,420,10,80,420,160);r.addColorStop(0,'rgba(180,80,255,.35)');r.addColorStop(1,'transparent');g.fillStyle=r;g.fillRect(0,260,260,300)}
+ if(i==1){g.fillStyle='#3a1208';g.beginPath();g.moveTo(0,420);g.lineTo(80,300);g.lineTo(150,400);g.lineTo(230,200);g.lineTo(300,400);g.lineTo(360,320);g.lineTo(360,560);g.lineTo(0,560);g.fill();
+  const r=g.createRadialGradient(230,200,5,230,200,70+Math.sin(a)*10);r.addColorStop(0,'#ffd23f');r.addColorStop(1,'transparent');g.fillStyle=r;g.fillRect(140,110,180,180);
+  g.fillStyle='#ff4a0a';g.beginPath();g.moveTo(0,520);for(let x=0;x<=W;x+=20)g.lineTo(x,505+Math.sin(x*.05+a)*6);g.lineTo(W,H);g.lineTo(0,H);g.fill()}
+ if(i==2){g.fillStyle='#fff3a0';g.beginPath();g.arc(300,90,32,0,7);g.fill();g.fillStyle='#4f9a45';g.beginPath();g.arc(60,540,170,0,7);g.arc(300,560,150,0,7);g.fill();
+  for(const x of[40,150,310]){g.fillStyle='#6b4423';g.fillRect(x-5,400,10,80);g.fillStyle='#2e7d32';for(let k=0;k<3;k++){g.beginPath();g.arc(x+(k-1)*20,395+Math.abs(k-1)*12,24,0,7);g.fill()}}}
+ if(i==3){g.fillStyle='#ffe08a';g.beginPath();g.arc(180,330,70,0,7);g.fill();g.fillStyle='#2a1230';g.beginPath();g.moveTo(0,420);g.lineTo(100,360);g.lineTo(200,430);g.lineTo(300,350);g.lineTo(360,410);g.lineTo(360,560);g.lineTo(0,560);g.fill();
+  g.fillStyle='#6b3e1d';for(const x of[50,280]){g.beginPath();g.moveTo(x-30,520);g.lineTo(x,450);g.lineTo(x+30,520);g.fill()}
+  g.font=(34+Math.sin(a*4)*4)+'px serif';g.textAlign='center';g.fillText('🔥',165,525)}
+ if(i==4){for(let k=0;k<9;k++){const h=140+(k*53%140),x=k*42;g.fillStyle='#16233f';g.fillRect(x,H-h,36,h);g.fillStyle='#ffe58a';for(let y=H-h+10;y<H-10;y+=18)for(let z=6;z<30;z+=12)if((x+y+z)%3)g.fillRect(x+z,y,5,8)}}}
+function menu(){mode='menu';show(`<div class="big">⏳</div><h1>Time Traveler</h1><p>Journey from deep space through history. Complete tasks & puzzles, earn points, and dress for every age!</p><p>💰 Points: <b>${S.w}</b> &nbsp; Level: <b>${S.lvl+1}/5</b></p><button onclick="wardrobe()">▶ Play</button><button class="s" onclick="reset()">Restart</button>`)}
+function reset(){S={w:0,own:['0-0'],lvl:0,sel:{0:0}};save();menu()}
+function wardrobe(){mode='menu';const l=L[S.lvl],sel=S.sel[S.lvl],owned=l.o.some((o,i)=>S.own.includes(S.lvl+'-'+i));
+ show(`<h1>👕 Wardrobe</h1><p><b>${l.n}</b></p><p>Pick your outfit • 💰 ${S.w}</p><div class="row">${l.o.map((o,i)=>{const k=S.lvl+'-'+i,has=S.own.includes(k);return `<div class="oc ${sel===i&&has?'on':''}"><canvas id="p${i}" width="84" height="110"></canvas><b>${o.n}</b><small>${o.perk?PK[o.perk]:'No perk'}</small>${has?`<button onclick="eq(${i})">${sel===i?'Equipped':'Equip'}</button>`:`<button ${S.w<o.cost?'disabled':''} onclick="buy(${i})">Buy ${o.cost}</button>`}</div>`}).join('')}</div>${owned?`<button onclick="intro()">Start ➜</button>`:`<p>Buy an outfit to enter this age!</p>`}${!owned&&S.lvl>0&&S.w<Math.min(...l.o.map(o=>o.cost))?'<button class="s" onclick="S.lvl--;save();wardrobe()">Replay previous age</button>':''}`);
+ l.o.forEach((o,i)=>{const c=document.getElementById('p'+i).getContext('2d');drawChar(c,42,44,o,1.15)})}
+function eq(i){S.sel[S.lvl]=i;save();wardrobe()}
+function buy(i){S.w-=L[S.lvl].o[i].cost;S.own.push(S.lvl+'-'+i);S.sel[S.lvl]=i;save();wardrobe()}
+function intro(){const l=L[S.lvl];if(!S.own.includes(S.lvl+'-'+(S.sel[S.lvl]??-1)))return wardrobe();
+ show(`<h1>${l.n}</h1><p>🎯 ${l.task}</p><p>Drag your finger to move. You have 3 ❤️.</p><p>Then solve a puzzle for bonus points!</p><button onclick="start()">Go!</button>`)}
+function start(){ui.style.display='none';mode='play';P={x:W/2,y:H-90};tx=P.x;ty=P.y;items=[];got=0;const pk=cur().perk;lives=pk=='life'?4:3;t=0}
+function after(){const l=L[S.lvl];show(`<div class="big">${l.ic[0]}</div><h1>Puzzle Time!</h1><p>${l.puz=='simon'?'Repeat the light sequence to fix the machine.':'Match all pairs to unlock the treasure.'}</p><button onclick="${l.puz}()">Solve</button>`)}
+function simon(){const l=L[S.lvl],cols=['#ef4444','#22c55e','#3b82f6','#eab308'],n=3+Math.floor(S.lvl/2),seq=Array.from({length:n},()=>Math.floor(Math.random()*4));let u=0,ok=false;
+ show(`<h1>Memory Sequence</h1><p id="m">Watch...</p><div class="grid" style="grid-template-columns:84px 84px">${cols.map((c,i)=>`<button class="pad" id="b${i}" style="background:${c}" onclick="pp(${i})">${l.ic[i]}</button>`).join('')}</div>`);
+ const f=i=>{const b=document.getElementById('b'+i);if(!b)return;b.classList.add('lit');setTimeout(()=>b.classList.remove('lit'),350)};
+ window.pp=i=>{if(!ok)return;f(i);if(i!=seq[u]){ok=false;document.getElementById('m').textContent='Oops! Watch again...';return setTimeout(play,900)}u++;if(u==n){ok=false;fin(30)}};
+ function play(){u=0;ok=false;seq.forEach((s,k)=>setTimeout(()=>f(s),600+k*600));setTimeout(()=>{ok=true;const m=document.getElementById('m');if(m)m.textContent='Your turn!'},600+n*600)}play()}
+function match(){const l=L[S.lvl],d=[...l.ic,...l.ic].sort(()=>Math.random()-.5);let a=null,lock=false,done=0;
+ show(`<h1>Match the Pairs</h1><p>Tap cards to flip</p><div class="grid" style="grid-template-columns:repeat(4,64px)">${d.map((e,i)=>`<button class="card" id="k${i}" onclick="fl(${i})">?</button>`).join('')}</div>`);
+ window.fl=i=>{const b=document.getElementById('k'+i);if(lock||b.dataset.d||a===i)return;b.textContent=d[i];if(a===null){a=i;return}
+  const p=a,pb=document.getElementById('k'+p);a=null;if(d[p]==d[i]){b.dataset.d=pb.dataset.d=1;b.style.background=pb.style.background='#16a34a';if(++done==4)setTimeout(()=>fin(30),500)}else{lock=true;setTimeout(()=>{b.textContent=pb.textContent='?';lock=false},700)}}}
+function fin(bonus){const l=L[S.lvl],m=cur().perk=='bonus'?1.5:1,pts=Math.round((got*10+bonus)*m);S.w+=pts;
+ if(S.lvl<4){S.lvl++;save();show(`<div class="big">🎉</div><h1>Age Complete!</h1><p>+${pts} points (incl. ${bonus} puzzle bonus${m>1?', x1.5 outfit perk':''})</p><p>💰 Total: ${S.w}</p><p>Next: <b>${L[S.lvl].n}</b></p><button onclick="wardrobe()">Visit Wardrobe ➜</button>`)}
+ else{save();show(`<div class="big">🏆</div><h1>You did it!</h1><p>You journeyed from space to today. Final points: ${S.w}</p><button onclick="reset()">Play Again</button>`)}}
+function over(){mode='end';show(`<div class="big">💥</div><h1>Game Over</h1><p>Try again!</p><button onclick="start()">Retry</button><button class="s" onclick="wardrobe()">Wardrobe</button>`)}
+function pos(e){const r=cv.getBoundingClientRect();tx=Math.max(25,Math.min(W-25,(e.clientX-r.left)/r.width*W));ty=Math.max(70,Math.min(H-40,(e.clientY-r.top)/r.height*H-50))}
+cv.addEventListener('pointermove',pos);cv.addEventListener('pointerdown',pos);
+function loop(){requestAnimationFrame(loop);T++;const l=L[S.lvl],gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,l.sky[0]);gr.addColorStop(1,l.sky[1]);g.fillStyle=gr;g.fillRect(0,0,W,H);bg(S.lvl);
+ g.globalAlpha=.7;g.fillStyle=S.lvl==2||S.lvl==3?'#ffffff':'#ffd9a0';parts.forEach(s=>{s.y+=s.s*(S.lvl==1?-.5:.6);if(s.y>H||s.y<0){s.y=S.lvl==1?H:0;s.x=Math.random()*W}g.fillRect(s.x,s.y,s.s*1.5,s.s*1.5)});g.globalAlpha=1;
+ if(S.lvl==1)lavaFloor();if(mode!=='play')return;t++;
+ if(t%Math.max(16,46-S.lvl*4)==0){const bad=Math.random()<.35+S.lvl*.04,a=bad?l.bad:l.good;items.push({x:25+Math.random()*(W-50),y:-20,e:a[Math.random()*a.length|0],bad,v:1.7+S.lvl*.4+Math.random()})}
+ P.x+=(tx-P.x)*.22;P.y+=(ty-P.y)*.22;const R=cur().perk=='magnet'?58:36;g.textAlign='center';g.font='40px serif';
+ for(let i=items.length-1;i>=0;i--){const it=items[i];it.y+=it.v;{const cx=it.x,cy=it.y-14,k=it.bad?'255,60,60':'255,235,120',rg=g.createRadialGradient(cx,cy,6,cx,cy,34);rg.addColorStop(0,'rgba('+k+',.9)');rg.addColorStop(1,'rgba('+k+',0)');g.fillStyle=rg;g.beginPath();g.arc(cx,cy,34,0,7);g.fill();g.fillStyle='rgba(10,10,30,.55)';g.beginPath();g.arc(cx,cy,25,0,7);g.fill();g.lineWidth=3;g.strokeStyle=it.bad?'#ff4545':'#ffe96b';g.beginPath();g.arc(cx,cy,25+Math.sin(T*.25)*2,0,7);g.stroke()}g.fillText(it.e,it.x,it.y);
+  if(Math.hypot(it.x-P.x,it.y-P.y)<R){items.splice(i,1);if(it.bad){if(--lives<=0)return over()}else if(++got>=l.goal){mode='puz';return after()}}else if(it.y>H+30)items.splice(i,1)}
+ g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(P.x,P.y+54,26,7,0,0,7);g.fill();drawChar(g,P.x,P.y,cur(),1.3);
+ g.fillStyle='rgba(0,0,0,.45)';g.fillRect(0,0,W,38);g.fillStyle='#fff';g.font='bold 14px sans-serif';g.textAlign='left';g.fillText(`Lv ${S.lvl+1} 🎯 ${got}/${l.goal}`,10,24);g.textAlign='right';g.fillText(`${'❤️'.repeat(lives)} 💰${S.w}`,W-10,24)}
+menu();loop();
+</script></body></html>
